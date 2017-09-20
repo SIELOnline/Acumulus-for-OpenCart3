@@ -1,0 +1,64 @@
+h2 {
+    margin-top: 2em;
+}
+
+form h2:first-child {
+    margin-top: 0;
+}
+
+.form-horizontal legend.form-group {
+    margin-top: 2em;
+    border-top: solid 2px #e5e5e5;
+    border-bottom-width: 0;
+    padding-left: 15px;
+}
+
+.form-horizontal .control-label {
+    padding-top: 0;
+}
+
+.form-horizontal .radio, .form-horizontal .checkbox {
+    padding-top: 0;
+    padding-left: 20px;
+    overflow: auto;
+}
+
+.form-group > span.control-label {
+    font-weight: bold;
+}
+
+.form-group.required > span.control-label::before {
+    color: #f00;
+    content: "* ";
+    font-weight: bold;
+}
+
+.form-group > .radio > label,
+.form-group > .checkbox > label {
+    padding-bottom: 8px;
+    text-align: left;
+}
+
+.form-group.required > .radio > label::before {
+    content: "";
+}
+
+.radio input, .checkbox input {
+    float: left;
+    clear: left;
+    width: auto;
+}
+
+.radio label, .checkbox label {
+    float: left;
+    width: auto;
+    padding-left: 0.5em;
+}
+
+.description {
+    margin-top: 5px;
+}
+
+fieldset > .description {
+    margin-left: 0;
+}

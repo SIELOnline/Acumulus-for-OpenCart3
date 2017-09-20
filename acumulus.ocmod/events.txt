@@ -1,0 +1,12 @@
+Acumulus module events
+=======================
+
+The Acumulus module defines 3 events:
+
+1) admin/model/extension/module/acumulus/invoiceCreated/after
+2) admin/model/extension/module/acumulus/invoiceSend/before
+3) admin/model/extension/module/acumulus/invoiceSend/after
+
+See the example extension customise_acumulus_invoice for usage and
+documentation. You can download this exampe extension form the Acumulus
+forum at https://forum.acumulus.nl/index.php/topic,4150.0.html.

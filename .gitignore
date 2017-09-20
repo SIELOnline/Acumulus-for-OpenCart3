@@ -1,0 +1,20 @@
+# patches, diffs, merges
+*.patch
+interdiff.txt
+*.orig
+*.bak
+
+# PHPStorm
+.idea/*
+
+# Ignore library
+**/Siel/
+
+# Shared files
+acumulus.ocmod/changelog.txt
+acumulus.ocmod/license.txt
+acumulus.ocmod/licentie-nl.pdf
+acumulus.ocmod/leesmij.txt
+
+# Resulting zip
+*.ocmod.zip

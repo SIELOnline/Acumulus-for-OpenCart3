@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<modification >
+    <name>Acumulus Modification</name>
+	<code>acumulus</code>
+    <version>4.8.0</version>
+    <author>SIEL Acumulus</author>
+    <link>https://www.siel.nl/acumulus/</link>
+    <file path="admin/controller/common/menu.php">
+        <operation>
+            <search><![CDATA[$data['order_recurring'] = $this->url->link('sale/recurring']]></search>
+            <add position="after"><![CDATA[
+		$data['acumulus'] = $this->url->link('module/acumulus/batch', 'token=' . $this->session->data['token'], true);
+            ]]></add>
+        </operation>
+    </file>
+    <file path="admin/view/template/common/menu.tpl">
+        <operation>
+            <search><![CDATA[<li id="customer"><a class="parent"><i class="fa fa-user fa-fw"></i> <span><?php echo $text_customer; ?></span></a>]]></search>
+            <add position="before" offset="2"><![CDATA[
+      <li><a href="<?php echo $acumulus; ?>">Acumulus</a></li>
+            ]]></add>
+        </operation>
+    </file>
+</modification>
