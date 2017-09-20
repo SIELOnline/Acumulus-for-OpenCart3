@@ -72,7 +72,7 @@ use Siel\Acumulus\Invoice\Source;
  * - https://apidoc.sielsystems.nl/content/warning-error-and-status-response-section-most-api-calls
  *
  * @property \Loader $load
- * @property \ModelExtensionEvent $model_extension_event
+ * @property \ModelSettingEvent $model_setting_event
  */
 class ControllerExtensionModuleCustomiseAcumulusInvoice extends Controller
 {
@@ -133,23 +133,24 @@ class ControllerExtensionModuleCustomiseAcumulusInvoice extends Controller
       $this->document->setTitle($this->language->get('heading_title'));
       $data['heading_title'] = $this->language->get('heading_title');
       $data['button_save'] = $this->language->get('button_save');
+      $data['text_edit'] = $this->language->get('text_edit');
 
       // Add an intermediate level to the breadcrumb.
       $data['breadcrumbs'] = array();
       $data['breadcrumbs'][] = array(
         'text' => $this->language->get('text_home'),
-        'href' => $this->url->link('common/dashboard', 'token=' . $this->session->data['token'], true)
+        'href' => $this->url->link('common/dashboard', 'user_token=' . $this->session->data['user_token'], true)
       );
       $data['breadcrumbs'][] = array(
         'text' => $this->language->get('text_extension'),
-        'href' => $this->url->link('extension/extension', 'token=' . $this->session->data['token'] . '&type=module', true)
+        'href' => $this->url->link('extension/extension', 'user_token=' . $this->session->data['user_token'] . '&type=module', true)
       );
       $data['breadcrumbs'][] = array(
         'text' => $this->language->get('heading_title'),
-        'href' => $this->url->link('extension/module/customise_acumulus_invoice', 'token=' . $this->session->data['token'], true)
+        'href' => $this->url->link('extension/module/customise_acumulus_invoice', 'user_token=' . $this->session->data['user_token'], true)
       );
 
-      $data['cancel'] = $this->url->link('extension/extension', 'token=' . $this->session->data['token'] . '&type=module', true);
+      $data['cancel'] = $this->url->link('extension/extension', 'user_token=' . $this->session->data['user_token'] . '&type=module', true);
 
       $data['header'] = $this->load->controller('common/header');
       $data['column_left'] = $this->load->controller('common/column_left');
@@ -167,9 +168,9 @@ class ControllerExtensionModuleCustomiseAcumulusInvoice extends Controller
     protected function installEvents()
     {
         $this->uninstallEvents();
-        $this->model_extension_event->addEvent('customise_acumulus_invoice', 'admin/model/extension/module/acumulus/invoiceCreated/after', 'extension/module/customise_acumulus_invoice/invoiceCreatedAfter');
-        $this->model_extension_event->addEvent('customise_acumulus_invoice', 'admin/model/extension/module/acumulus/invoiceSend/before', 'extension/module/customise_acumulus_invoice/invoiceSendBefore');
-        $this->model_extension_event->addEvent('customise_acumulus_invoice', 'admin/model/extension/module/acumulus/invoiceSend/after', 'extension/module/customise_acumulus_invoice/invoiceSendAfter');
+        $this->model_setting_event->addEvent('customise_acumulus_invoice', 'admin/model/extension/module/acumulus/invoiceCreated/after', 'extension/module/customise_acumulus_invoice/invoiceCreatedAfter');
+        $this->model_setting_event->addEvent('customise_acumulus_invoice', 'admin/model/extension/module/acumulus/invoiceSend/before', 'extension/module/customise_acumulus_invoice/invoiceSendBefore');
+        $this->model_setting_event->addEvent('customise_acumulus_invoice', 'admin/model/extension/module/acumulus/invoiceSend/after', 'extension/module/customise_acumulus_invoice/invoiceSendAfter');
     }
 
     /**
@@ -177,8 +178,8 @@ class ControllerExtensionModuleCustomiseAcumulusInvoice extends Controller
      */
     protected function uninstallEvents()
     {
-        $this->load->model('extension/event');
-        $this->model_extension_event->deleteEvent('customise_acumulus_invoice');
+        $this->load->model('setting/event');
+        $this->model_setting_event->deleteEvent('customise_acumulus_invoice');
     }
 
     /**
