@@ -62,16 +62,15 @@ use Siel\Acumulus\Invoice\Source;
  *
  * ad 3)
  * This event is triggered after the invoice has been sent to Acumulus. The
- * Result object will tell youif there was an exception or if errors or warnings
- * were returned by the Acumulus API. On success, the entry id and token for the
- * newly created invoice inAcumulus are available, so you can e.g. retrieve the
- * pdf of the Acumulus invoice.
+ * Result object will tell you if there was an exception or if errors or
+ * warnings were returned by the Acumulus API. On success, the entry id and
+ * token for the newly created invoice inAcumulus are available, so you can e.g.
+ * retrieve the pdf of the Acumulus invoice.
  *
  * External Resources:
  * - https://apidoc.sielsystems.nl/content/invoice-add.
  * - https://apidoc.sielsystems.nl/content/warning-error-and-status-response-section-most-api-calls
  *
- * @property \Loader $load
  * @property \ModelSettingEvent $model_setting_event
  */
 class ControllerExtensionModuleCustomiseAcumulusInvoice extends Controller
@@ -109,6 +108,8 @@ class ControllerExtensionModuleCustomiseAcumulusInvoice extends Controller
 
     /**
      * Install controller action, called when the module is installed.
+     *
+     * @throws \Exception
      */
     public function install()
     {
@@ -117,6 +118,8 @@ class ControllerExtensionModuleCustomiseAcumulusInvoice extends Controller
 
     /**
      * Uninstall function, called when the module is uninstalled by an admin.
+     *
+     * @throws \Exception
      */
     public function uninstall()
     {
@@ -159,11 +162,13 @@ class ControllerExtensionModuleCustomiseAcumulusInvoice extends Controller
       $this->response->setOutput($this->load->view('extension/module/customise_acumulus_invoice', $data));
     }
 
-  /**
+    /**
      * Installs our events.
      *
      * This will add them to the table 'event' from where they are registered on
      * the start of each request. The controller actions can be found below.
+     *
+     * @throws \Exception
      */
     protected function installEvents()
     {
@@ -175,6 +180,8 @@ class ControllerExtensionModuleCustomiseAcumulusInvoice extends Controller
 
     /**
      * Removes the Acumulus event handlers from the event table.
+     *
+     * @throws \Exception
      */
     protected function uninstallEvents()
     {
@@ -240,7 +247,8 @@ class ControllerExtensionModuleCustomiseAcumulusInvoice extends Controller
             }
         }
         elseif ($result->hasError()) {
-            // Invoice was sent to Acumulus but not created due to errors in invoice.
+            // Invoice was sent to Acumulus but not created due to errors in the
+            // invoice.
         }
         else {
             // Sent successfully, invoice has been created in Acumulus:

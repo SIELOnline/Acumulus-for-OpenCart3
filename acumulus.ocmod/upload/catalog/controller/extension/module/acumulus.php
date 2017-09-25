@@ -6,10 +6,10 @@
  */
 class ControllerExtensionModuleAcumulus extends Controller
 {
-    /** @var \Siel\Acumulus\OpenCart\Helpers\OcHelper */
+    /** @var \Siel\Acumulus\OpenCart\OpenCart2\OpenCart23\Helpers\OcHelper */
     static private $staticOcHelper = null;
 
-    /** @var \Siel\Acumulus\OpenCart\Helpers\OcHelper */
+    /** @var \Siel\Acumulus\OpenCart\OpenCart2\OpenCart23\Helpers\OcHelper */
     private $ocHelper = null;
 
     /**
@@ -23,7 +23,7 @@ class ControllerExtensionModuleAcumulus extends Controller
         if ($this->ocHelper === NULL) {
             if (static::$staticOcHelper === NULL) {
                 // Load autoloader, container and then our helper that contains
-                // OC1 and OC2 shared code.
+                // OC1, OC2 and OC3 shared code.
                 require_once(DIR_SYSTEM . 'library/Siel/psr4.php');
                 $container = new \Siel\Acumulus\Helpers\Container($this->getShopNamespace());
                 static::$staticOcHelper = $container->getInstance('OcHelper', 'Helpers', array($this->registry, $container));
