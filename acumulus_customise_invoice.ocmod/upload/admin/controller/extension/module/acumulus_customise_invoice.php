@@ -3,6 +3,7 @@
 use Siel\Acumulus\Api;
 use Siel\Acumulus\Invoice\Result;
 use Siel\Acumulus\Invoice\Source;
+use Siel\Acumulus\Meta;
 
 /**
  * This extension contains example code to:
@@ -12,7 +13,7 @@ use Siel\Acumulus\Invoice\Source;
  * Usage of this extension:
  * You can use and modify this example extension as you like:
  * - only register the events you are going to use.
- * - add your own event handling n those event handler methods.
+ * - add your own event handling in those event handler methods.
  *
  * Or, if you already have an extension with custom code, you can add this code
  * over there:
@@ -26,7 +27,7 @@ use Siel\Acumulus\Invoice\Source;
  *
  * Documentation for the events:
  * The events defined by the Acumulus extension:
- * 1) admin/model/extension/module/acumulus/invoiceCreated/after
+ * 1) acumulus_invoice_created
  * 2) admin/model/extension/module/acumulus/invoiceSend/before
  * 3) admin/model/extension/module/acumulus/invoiceSend/after
  *
@@ -40,17 +41,24 @@ use Siel\Acumulus\Invoice\Source;
  * - Correcting vat rates if they were based on dividing a vat amount (in cents)
  *   by a price (in cents).
  * - Splitting discount lines over multiple vat rates.
+ * - Making prices ex vat more precise to prevent invoice amount differences.
+ * - Converting non Euro currencies (future feature).
+ * - Flattening composed products or products with options.
  *
- * So with tis event you can make changes to the raw invoice based on your
- * specific situation. Normally you should prefer the 2nd event, where you can
- * assume that all fields are filled in and have a valid value.
+ * So with this event you can make changes to the raw invoice based on your
+ * specific situation. By setting the invoice to null, you can prevent having
+ * the invoice been sent to Acumulus. Normally you should prefer the 2nd event,
+ * where you can assume that the invoice has been flattened and all fields are
+ * filled in and have a valid value.
  *
- * However, in some specific cases this event maybe needed, e.g. setting or
+ * However, in some specific cases this event may be needed, e.g. setting or
  * correcting tax rates before the completor strategies are executed.
  *
  * ad 2)
  * This event is triggered just before the invoice is sent to Acumulus. You can
  * make changes to the invoice or add warnings or errors to the Result object.
+ * By setting the invoice to null, you can prevent having the invoice been sent
+ * to Acumulus.
  *
  * Typical use cases are:
  * - Template, account number, or cost center selection based on order
@@ -64,8 +72,8 @@ use Siel\Acumulus\Invoice\Source;
  * This event is triggered after the invoice has been sent to Acumulus. The
  * Result object will tell you if there was an exception or if errors or
  * warnings were returned by the Acumulus API. On success, the entry id and
- * token for the newly created invoice inAcumulus are available, so you can e.g.
- * retrieve the pdf of the Acumulus invoice.
+ * token for the newly created invoice in Acumulus are available, so you can
+ * e.g. retrieve the pdf of the Acumulus invoice.
  *
  * External Resources:
  * - https://apidoc.sielsystems.nl/content/invoice-add.
@@ -73,7 +81,7 @@ use Siel\Acumulus\Invoice\Source;
  *
  * @property \ModelSettingEvent $model_setting_event
  */
-class ControllerExtensionModuleCustomiseAcumulusInvoice extends Controller
+class ControllerExtensionModuleAcumulusCustomiseInvoice extends Controller
 {
     /** @var \Siel\Acumulus\Helpers\ContainerInterface */
     protected static $container = null;
@@ -132,7 +140,7 @@ class ControllerExtensionModuleCustomiseAcumulusInvoice extends Controller
      */
     public function index()
     {
-      $this->load->language('extension/module/customise_acumulus_invoice');
+      $this->load->language('extension/module/acumulus_customise_invoice');
       $this->document->setTitle($this->language->get('heading_title'));
       $data['heading_title'] = $this->language->get('heading_title');
       $data['button_save'] = $this->language->get('button_save');
@@ -150,7 +158,7 @@ class ControllerExtensionModuleCustomiseAcumulusInvoice extends Controller
       );
       $data['breadcrumbs'][] = array(
         'text' => $this->language->get('heading_title'),
-        'href' => $this->url->link('extension/module/customise_acumulus_invoice', 'user_token=' . $this->session->data['user_token'], true)
+        'href' => $this->url->link('extension/module/acumulus_customise_invoice', 'user_token=' . $this->session->data['user_token'], true)
       );
 
       $data['cancel'] = $this->url->link('extension/extension', 'user_token=' . $this->session->data['user_token'] . '&type=module', true);
@@ -159,7 +167,7 @@ class ControllerExtensionModuleCustomiseAcumulusInvoice extends Controller
       $data['column_left'] = $this->load->controller('common/column_left');
       $data['footer'] = $this->load->controller('common/footer');
 
-      $this->response->setOutput($this->load->view('extension/module/customise_acumulus_invoice', $data));
+      $this->response->setOutput($this->load->view('extension/module/acumulus_customise_invoice', $data));
     }
 
     /**
@@ -173,9 +181,9 @@ class ControllerExtensionModuleCustomiseAcumulusInvoice extends Controller
     protected function installEvents()
     {
         $this->uninstallEvents();
-        $this->model_setting_event->addEvent('customise_acumulus_invoice', 'admin/model/extension/module/acumulus/invoiceCreated/after', 'extension/module/customise_acumulus_invoice/invoiceCreatedAfter');
-        $this->model_setting_event->addEvent('customise_acumulus_invoice', 'admin/model/extension/module/acumulus/invoiceSend/before', 'extension/module/customise_acumulus_invoice/invoiceSendBefore');
-        $this->model_setting_event->addEvent('customise_acumulus_invoice', 'admin/model/extension/module/acumulus/invoiceSend/after', 'extension/module/customise_acumulus_invoice/invoiceSendAfter');
+        $this->model_setting_event->addEvent('acumulus_customise_invoice', 'admin/model/extension/module/acumulus/invoiceCreated/after', 'extension/module/acumulus_customise_invoice/invoiceCreatedAfter');
+        $this->model_setting_event->addEvent('acumulus_customise_invoice', 'admin/model/extension/module/acumulus/invoiceSend/before', 'extension/module/acumulus_customise_invoice/invoiceSendBefore');
+        $this->model_setting_event->addEvent('acumulus_customise_invoice', 'admin/model/extension/module/acumulus/invoiceSend/after', 'extension/module/acumulus_customise_invoice/invoiceSendAfter');
     }
 
     /**
@@ -186,37 +194,51 @@ class ControllerExtensionModuleCustomiseAcumulusInvoice extends Controller
     protected function uninstallEvents()
     {
         $this->load->model('setting/event');
-        $this->model_setting_event->deleteEvent('customise_acumulus_invoice');
+        $this->model_setting_event->deleteEvent('acumulus_customise_invoice');
     }
 
     /**
      * Processes the event triggered before an invoice will be sent to Acumulus.
      *
-     * @param array $invoice
-     *   The invoice in Acumulus format as will be sent to Acumulus.
+     * @param array|null $invoice
+     *   The invoice in Acumulus format as will be sent to Acumulus or null if
+     *   another event handler already decided that the invoice should not be
+     *   be sent to Acumulus.
      * @param \Siel\Acumulus\Invoice\Source $invoiceSource
-     *   The original OpenCart order for which te invoice has been created.
+     *   Wrapper around the original OpenCart order for which the invoice has
+     *   been created.
      * @param \Siel\Acumulus\Invoice\Result $localResult
      *   Any local error or warning messages that were created locally.
      */
-    public function invoiceCreatedAfter(array &$invoice, Source $invoiceSource, Result $localResult)
+    public function invoiceCreatedAfter(&$invoice, Source $invoiceSource, Result $localResult)
     {
         // Here you can make changes to the raw invoice based on your specific
         // situation, e.g. setting or correcting tax rates before the completor
         // strategies execute.
+
+	    // NOTE: the example below is now an option in the advanced settings:
+	    // Prevent sending 0-amount invoices (free products).
+	    if (empty($invoice) || $invoice['customer']['invoice'][Meta::InvoiceAmountInc] == 0) {
+		    $invoice = null;
+	    } else {
+		    // Change invoice here.
+	    }
     }
 
     /**
      * Processes the event triggered before an invoice will be sent to Acumulus.
      *
-     * @param array $invoice
-     *   The invoice in Acumulus format as will be sent to Acumulus.
+     * @param array|null $invoice
+     *   The invoice in Acumulus format as will be sent to Acumulus or null
+     *   if another event handler already decided that the invoice should not
+     *   be sent to Acumulus.
      * @param \Siel\Acumulus\Invoice\Source $invoiceSource
-     *   The original OpenCart order for which te invoice has been created.
+     *   Wrapper around the original OpenCart order for which the invoice has
+     *   been created.
      * @param \Siel\Acumulus\Invoice\Result $localResult
      *   Any local error or warning messages that were created locally.
      */
-    public function invoiceSendBefore(array &$invoice, Source $invoiceSource, Result $localResult)
+    public function invoiceSendBefore(&$invoice, Source $invoiceSource, Result $localResult)
     {
         // Here you can make changes to the invoice based on your specific
         // situation, e.g. setting the payment status to its correct value:
@@ -229,9 +251,10 @@ class ControllerExtensionModuleCustomiseAcumulusInvoice extends Controller
      * You can add warnings and errors to the result and they will be mailed.
      *
      * @param array $invoice
-     *   The invoice in Acumulus format as will be sent to Acumulus.
+     *   The invoice in Acumulus format as has been sent to Acumulus.
      * @param \Siel\Acumulus\Invoice\Source $invoiceSource
-     *   The original OpenCart order for which te invoice has been created.
+     *   Wrapper around the original OpenCart order for which the invoice has
+     *   been sent.
      * @param \Siel\Acumulus\Invoice\Result $result
      *   The result as sent back by Acumulus.
      */
@@ -272,7 +295,8 @@ class ControllerExtensionModuleCustomiseAcumulusInvoice extends Controller
      * Please fill in your own logic here in this method.
      *
      * @param \Siel\Acumulus\Invoice\Source $invoiceSource
-     *   The original order for which the invoice is being made.
+     *   Wrapper around the original order for which the invoice has been
+     *   created.
      *
      * @return bool
      *   True if the order has been paid, false otherwise.
@@ -280,7 +304,7 @@ class ControllerExtensionModuleCustomiseAcumulusInvoice extends Controller
      */
     protected function isOrderPaid(Source $invoiceSource)
     {
-//        static::$container->getLog()->info('ControllerExtensionModuleCustomiseAcumulusInvoice::isOrderPaid(): invoiceSource = ' . var_export($invoiceSource->getSource(), true));
+//        static::$container->getLog()->info('ControllerExtensionModuleAcumulusCustomiseInvoice::isOrderPaid(): invoiceSource = ' . var_export($invoiceSource->getSource(), true));
         return true;
     }
 }

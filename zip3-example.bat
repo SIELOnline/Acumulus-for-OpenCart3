@@ -6,10 +6,10 @@ exit /B 1;
 )
 set version=%1
 
-del Customise-Acumulus-Invoice-Example-%version%.ocmod.zip 2> nul
+del Acumulus-Customise-Invoice-%version%.ocmod.zip 2> nul
 
 rem zip package.
-cd customise_acumulus_invoice.ocmod
-"C:\Program Files\7-Zip\7z.exe" a -x!install.xml -tzip ..\Customise-Acumulus-Invoice-Example-%version%.ocmod.zip | findstr /i "Failed Error"
+cd acumulus_customise_invoice.ocmod
+"C:\Program Files\7-Zip\7z.exe" a -x!install.xml -tzip ..\Acumulus-Customise-Invoice-%version%.ocmod.zip | findstr /i "Failed Error"
 cd ..
-"C:\Program Files\7-Zip\7z.exe" t Customise-Acumulus-Invoice-Example-%version%.ocmod.zip | findstr /i "Processing Everything Failed Error"
+"C:\Program Files\7-Zip\7z.exe" t Acumulus-Customise-Invoice-%version%.ocmod.zip | findstr /i "Processing Everything Failed Error"

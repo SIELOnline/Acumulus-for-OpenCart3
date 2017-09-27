@@ -1,4 +1,4 @@
-Deze Customise Acumulus Invoice extentie is ontwikkeld door Buro Rader
+Deze Acumulus Customise Invoice extentie is ontwikkeld door Buro Rader
 (http://www.burorader.com/).
 
 Deze extensie bevat voorbeeldcode die duidelijk maakt hoe gebruik te

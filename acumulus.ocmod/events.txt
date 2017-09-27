@@ -8,5 +8,5 @@ The Acumulus module defines 3 events:
 3) admin/model/extension/module/acumulus/invoiceSend/after
 
 See the example extension customise_acumulus_invoice for usage and
-documentation. You can download this exampe extension form the Acumulus
+documentation. You can download this exampe extension from the Acumulus
 forum at https://forum.acumulus.nl/index.php/topic,4150.0.html.
