@@ -1,7 +1,5 @@
 <?php
 
-use Siel\Acumulus\Api;
-use Siel\Acumulus\Invoice\Result;
 use Siel\Acumulus\Invoice\Source;
 use Siel\Acumulus\Meta;
 
@@ -15,21 +13,19 @@ use Siel\Acumulus\Meta;
  * - only register the events you are going to use.
  * - add your own event handling in those event handler methods.
  *
- * Or, if you already have an extension with custom code, you can add this code
- * over there:
- * - installEvents() + call to it in install(): only register the events you are
- *   going to use.
- * - uninstallEvents() + call to it in uninstall()
- * Plus the events below, but only those you are going to use:
- * - invoiceCreatedAfter(): add your own event handling
- * - invoiceSendBefore(): add your own event handling
- * - invoiceSendAfter(): add your own event handling
+ * NOTE that upon install this file will be hard linked to the catalog
+ * controller section of this webshop. This is done so because the events can
+ * be triggered from both the catalog and admin side of the shop. In doing so,
+ * you only have to program your customisations once.
  *
  * Documentation for the events:
  * The events defined by the Acumulus extension:
- * 1) acumulus_invoice_created
+ * 1) admin/model/extension/module/acumulus/invoiceCreated/after
+ *    and  catalog/model/extension/module/acumulus/invoiceCreated/after
  * 2) admin/model/extension/module/acumulus/invoiceSend/before
+ *    and catalog/model/extension/module/acumulus/invoiceSend/before
  * 3) admin/model/extension/module/acumulus/invoiceSend/after
+ *    and catalog/model/extension/module/acumulus/invoiceSend/after
  *
  * ad 1)
  * This event is triggered after the raw invoice has been created but before it
@@ -121,7 +117,11 @@ class ControllerExtensionModuleAcumulusCustomiseInvoice extends Controller
      */
     public function install()
     {
-        $this->installEvents();
+        if ($this->isAdmin())
+        {
+            $this->createLink();
+            $this->installEvents();
+        }
     }
 
     /**
@@ -131,7 +131,11 @@ class ControllerExtensionModuleAcumulusCustomiseInvoice extends Controller
      */
     public function uninstall()
     {
-        $this->uninstallEvents();
+        if ($this->isAdmin())
+        {
+            $this->uninstallEvents();
+            $this->removeLink();
+        }
     }
 
     /**
@@ -140,34 +144,66 @@ class ControllerExtensionModuleAcumulusCustomiseInvoice extends Controller
      */
     public function index()
     {
-      $this->load->language('extension/module/acumulus_customise_invoice');
-      $this->document->setTitle($this->language->get('heading_title'));
-      $data['heading_title'] = $this->language->get('heading_title');
-      $data['button_save'] = $this->language->get('button_save');
-      $data['text_edit'] = $this->language->get('text_edit');
+        if ($this->isAdmin())
+        {
+            $this->load->language('extension/module/acumulus_customise_invoice');
+            $this->document->setTitle($this->language->get('heading_title'));
+            $data['heading_title'] = $this->language->get('heading_title');
+            $data['button_save'] = $this->language->get('button_save');
+            $data['text_edit'] = $this->language->get('text_edit');
 
-      // Add an intermediate level to the breadcrumb.
-      $data['breadcrumbs'] = array();
-      $data['breadcrumbs'][] = array(
-        'text' => $this->language->get('text_home'),
-        'href' => $this->url->link('common/dashboard', 'user_token=' . $this->session->data['user_token'], true)
-      );
-      $data['breadcrumbs'][] = array(
-        'text' => $this->language->get('text_extension'),
-        'href' => $this->url->link('extension/extension', 'user_token=' . $this->session->data['user_token'] . '&type=module', true)
-      );
-      $data['breadcrumbs'][] = array(
-        'text' => $this->language->get('heading_title'),
-        'href' => $this->url->link('extension/module/acumulus_customise_invoice', 'user_token=' . $this->session->data['user_token'], true)
-      );
+            // Add an intermediate level to the breadcrumb.
+            $data['breadcrumbs']   = [];
+            $data['breadcrumbs'][] = [
+                'text' => $this->language->get('text_home'),
+                'href' => $this->url->link('common/dashboard', 'user_token=' . $this->session->data['user_token'], true),
+            ];
+            $data['breadcrumbs'][] = [
+                'text' => $this->language->get('text_extension'),
+                'href' => $this->url->link('extension/extension', 'user_token=' . $this->session->data['user_token'] . '&type=module', true),
+            ];
+            $data['breadcrumbs'][] = [
+                'text' => $this->language->get('heading_title'),
+                'href' => $this->url->link('extension/module/acumulus_customise_invoice', 'user_token=' . $this->session->data['user_token'], true),
+            ];
 
-      $data['cancel'] = $this->url->link('extension/extension', 'user_token=' . $this->session->data['user_token'] . '&type=module', true);
+            $data['cancel'] = $this->url->link('extension/extension', 'user_token=' . $this->session->data['user_token'] . '&type=module', true);
 
-      $data['header'] = $this->load->controller('common/header');
-      $data['column_left'] = $this->load->controller('common/column_left');
-      $data['footer'] = $this->load->controller('common/footer');
+            $data['header'] = $this->load->controller('common/header');
+            $data['column_left'] = $this->load->controller('common/column_left');
+            $data['footer'] = $this->load->controller('common/footer');
 
-      $this->response->setOutput($this->load->view('extension/module/acumulus_customise_invoice', $data));
+            $this->response->setOutput($this->load->view('extension/module/acumulus_customise_invoice', $data));
+        }
+    }
+
+    /**
+     * Creates a hard link to this file in the catalog controller part.
+     *
+     * Because order status change events may be triggered in both the catalog
+     * and amin part of the application, this code should be executable in both
+     * parts as well. To ease the maintenance task, we create a hard link from
+     * the catalog part to this file
+     */
+    protected function createLink()
+    {
+        $target = DIR_APPLICATION . '../admin/controller/extension/module/acumulus_customise_invoice.php';
+        $link = DIR_APPLICATION . '../catalog/controller/extension/module/acumulus_customise_invoice.php';
+        if (file_exists($link)) {
+            unlink($link);
+        }
+        link($target, $link);
+    }
+
+    /**
+     * Removes the hard link that was created during install.
+     */
+    protected function removeLink()
+    {
+        $link = DIR_APPLICATION . '../catalog/controller/extension/module/acumulus_customise_invoice.php';
+        if (file_exists($link)) {
+            unlink($link);
+        }
     }
 
     /**
@@ -182,8 +218,11 @@ class ControllerExtensionModuleAcumulusCustomiseInvoice extends Controller
     {
         $this->uninstallEvents();
         $this->model_setting_event->addEvent('acumulus_customise_invoice', 'admin/model/extension/module/acumulus/invoiceCreated/after', 'extension/module/acumulus_customise_invoice/invoiceCreatedAfter');
+        $this->model_setting_event->addEvent('acumulus_customise_invoice', 'catalog/model/extension/module/acumulus/invoiceCreated/after', 'extension/module/acumulus_customise_invoice/invoiceCreatedAfter');
         $this->model_setting_event->addEvent('acumulus_customise_invoice', 'admin/model/extension/module/acumulus/invoiceSend/before', 'extension/module/acumulus_customise_invoice/invoiceSendBefore');
+        $this->model_setting_event->addEvent('acumulus_customise_invoice', 'catalog/model/extension/module/acumulus/invoiceSend/before', 'extension/module/acumulus_customise_invoice/invoiceSendBefore');
         $this->model_setting_event->addEvent('acumulus_customise_invoice', 'admin/model/extension/module/acumulus/invoiceSend/after', 'extension/module/acumulus_customise_invoice/invoiceSendAfter');
+        $this->model_setting_event->addEvent('acumulus_customise_invoice', 'catalog/model/extension/module/acumulus/invoiceSend/after', 'extension/module/acumulus_customise_invoice/invoiceSendAfter');
     }
 
     /**
@@ -200,18 +239,20 @@ class ControllerExtensionModuleAcumulusCustomiseInvoice extends Controller
     /**
      * Processes the event triggered before an invoice will be sent to Acumulus.
      *
-     * @param array|null $invoice
-     *   The invoice in Acumulus format as will be sent to Acumulus or null if
-     *   another event handler already decided that the invoice should not be
-     *   be sent to Acumulus.
-     * @param \Siel\Acumulus\Invoice\Source $invoiceSource
-     *   Wrapper around the original OpenCart order for which the invoice has
-     *   been created.
-     * @param \Siel\Acumulus\Invoice\Result $localResult
-     *   Any local error or warning messages that were created locally.
+     * @param string $route
+     *   The route that triggered this event.
+     * @param array $args
+     *   The arguments for the events.
      */
-    public function invoiceCreatedAfter(&$invoice, Source $invoiceSource, Result $localResult)
+    public function invoiceCreatedAfter(/** @noinspection PhpUnusedParameterInspection */ $route, array $args)
     {
+        /** @var array $invoice */
+        $invoice = &$args['invoice'];
+        /** @var \Siel\Acumulus\Invoice\Source $invoiceSource */
+        $invoiceSource = $args['source'];
+        /** @var \Siel\Acumulus\Invoice\Result $localResult */
+        $localResult = $args['localResult'];
+
         // Here you can make changes to the raw invoice based on your specific
         // situation, e.g. setting or correcting tax rates before the completor
         // strategies execute.
@@ -228,21 +269,23 @@ class ControllerExtensionModuleAcumulusCustomiseInvoice extends Controller
     /**
      * Processes the event triggered before an invoice will be sent to Acumulus.
      *
-     * @param array|null $invoice
-     *   The invoice in Acumulus format as will be sent to Acumulus or null
-     *   if another event handler already decided that the invoice should not
-     *   be sent to Acumulus.
-     * @param \Siel\Acumulus\Invoice\Source $invoiceSource
-     *   Wrapper around the original OpenCart order for which the invoice has
-     *   been created.
-     * @param \Siel\Acumulus\Invoice\Result $localResult
-     *   Any local error or warning messages that were created locally.
+     * @param string $route
+     *   The route that triggered this event.
+     * @param array $args
+     *   The arguments for the events.
      */
-    public function invoiceSendBefore(&$invoice, Source $invoiceSource, Result $localResult)
+    public function invoiceSendBefore(/** @noinspection PhpUnusedParameterInspection */ $route, array $args)
     {
+        /** @var array $invoice */
+        $invoice = &$args['invoice'];
+        /** @var \Siel\Acumulus\Invoice\Source $invoiceSource */
+        $invoiceSource = $args['source'];
+        /** @var \Siel\Acumulus\Invoice\Result $localResult */
+        $localResult = $args['localResult'];
+
         // Here you can make changes to the invoice based on your specific
         // situation, e.g. setting the payment status to its correct value:
-        $invoice['customer']['invoice']['paymentstatus'] = $this->isOrderPaid($invoiceSource) ? Api::PaymentStatus_Paid : Api::PaymentStatus_Due;
+        //$invoice['customer']['invoice']['paymentstatus'] = $this->isOrderPaid($invoiceSource) ? Api::PaymentStatus_Paid : Api::PaymentStatus_Due;
     }
 
     /**
@@ -250,16 +293,20 @@ class ControllerExtensionModuleAcumulusCustomiseInvoice extends Controller
      *
      * You can add warnings and errors to the result and they will be mailed.
      *
-     * @param array $invoice
-     *   The invoice in Acumulus format as has been sent to Acumulus.
-     * @param \Siel\Acumulus\Invoice\Source $invoiceSource
-     *   Wrapper around the original OpenCart order for which the invoice has
-     *   been sent.
-     * @param \Siel\Acumulus\Invoice\Result $result
-     *   The result as sent back by Acumulus.
+     * @param string $route
+     *   The route that triggered this event.
+     * @param array $args
+     *   The arguments for the events.
      */
-    public function invoiceSendAfter(array $invoice, Source $invoiceSource, Result $result)
+    public function invoiceSendAfter(/** @noinspection PhpUnusedParameterInspection */ $route, array $args)
     {
+        /** @var array $invoice */
+        $invoice = &$args['invoice'];
+        /** @var \Siel\Acumulus\Invoice\Source $invoiceSource */
+        $invoiceSource = $args['source'];
+        /** @var \Siel\Acumulus\Invoice\Result $result */
+        $result = $args['result'];
+
         if ($result->getException()) {
             // Serious error:
             if ($result->isSent()) {
@@ -280,6 +327,17 @@ class ControllerExtensionModuleAcumulusCustomiseInvoice extends Controller
             }
             else {
                 // Without warnings.
+            }
+
+            $acumulusInvoice = $result->getResponse();
+            // Check if an entry id was created.
+            $acumulusInvoice = $result->getResponse();
+            if (!empty($acumulusInvoice['entryid'])) {
+                $token = $acumulusInvoice['token'];
+                $entryId = $acumulusInvoice['entryid'];
+            }
+            else {
+                // If the invoice was sent as a concept, no entryid will be returned.
             }
         }
     }
@@ -306,5 +364,16 @@ class ControllerExtensionModuleAcumulusCustomiseInvoice extends Controller
     {
 //        static::$container->getLog()->info('ControllerExtensionModuleAcumulusCustomiseInvoice::isOrderPaid(): invoiceSource = ' . var_export($invoiceSource->getSource(), true));
         return true;
+    }
+
+    /**
+     *
+     *
+     *
+     * @return bool
+     *
+     */
+    protected function isAdmin() {
+        return strrpos(DIR_APPLICATION, '/admin/') === strlen(DIR_APPLICATION) - strlen('/admin/');
     }
 }
