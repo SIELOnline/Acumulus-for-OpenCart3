@@ -16,4 +16,4 @@ popd
 popd
 setlocal disabledelayedexpansion
 
-mklink /J D:\Projecten\Acumulus\OpenCart\www30\www\system\library\Siel D:\Projecten\Acumulus\Webkoppelingen\OpenCart3\acumulus.ocmod\upload\system\library\Siel
+mklink /J D:\Projecten\Acumulus\OpenCart\www30\www\system\library\siel D:\Projecten\Acumulus\Webkoppelingen\OpenCart3\acumulus.ocmod\upload\system\library\siel
