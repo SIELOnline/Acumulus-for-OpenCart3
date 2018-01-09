@@ -26,7 +26,9 @@ class ControllerExtensionModuleAcumulus extends Controller
             if (static::$staticOcHelper === NULL) {
                 // Load autoloader, container and then our helper that contains
                 // OC1, OC2 and OC3 shared code.
-                require_once(DIR_SYSTEM . 'library/Siel/psr4.php');
+                require_once(DIR_SYSTEM . 'library/siel/acumulus/SielAcumulusAutoloader.php');
+                SielAcumulusAutoloader::register();
+                // Language will be set by the helper (as it is common code).
                 $container = new \Siel\Acumulus\Helpers\Container($this->getShopNamespace());
                 static::$staticOcHelper = $container->getInstance('OcHelper', 'Helpers', array($this->registry, $container));
             }

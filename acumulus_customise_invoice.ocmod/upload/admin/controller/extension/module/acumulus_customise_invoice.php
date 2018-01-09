@@ -1,5 +1,6 @@
 <?php
 
+use Siel\Acumulus\Api;
 use Siel\Acumulus\Invoice\Source;
 use Siel\Acumulus\Meta;
 
@@ -93,7 +94,8 @@ class ControllerExtensionModuleAcumulusCustomiseInvoice extends Controller
         if (static::$container === NULL) {
             // Load the Acumulus autoloader, so we have access to Acumulus
             // helper classes.
-            require_once(DIR_SYSTEM . 'library/Siel/psr4.php');
+            require_once(DIR_SYSTEM . 'library/siel/acumulus/SielAcumulusAutoloader.php');
+            SielAcumulusAutoloader::register();
             static::$container = new \Siel\Acumulus\Helpers\Container($this->getShopNamespace(), 'nl');
         }
     }
@@ -233,11 +235,11 @@ class ControllerExtensionModuleAcumulusCustomiseInvoice extends Controller
     protected function uninstallEvents()
     {
         $this->load->model('setting/event');
-        $this->model_setting_event->deleteEvent('acumulus_customise_invoice');
+        $this->model_setting_event->deleteEventByCode('acumulus_customise_invoice');
     }
 
     /**
-     * Processes the event triggered before an invoice will be sent to Acumulus.
+     * Processes the event triggered after the raw invoice has been created.
      *
      * @param string $route
      *   The route that triggered this event.
@@ -362,7 +364,7 @@ class ControllerExtensionModuleAcumulusCustomiseInvoice extends Controller
      */
     protected function isOrderPaid(Source $invoiceSource)
     {
-//        static::$container->getLog()->info('ControllerExtensionModuleAcumulusCustomiseInvoice::isOrderPaid(): invoiceSource = ' . var_export($invoiceSource->getSource(), true));
+        //static::$container->getLog()->info('ControllerExtensionModuleAcumulusCustomiseInvoice::isOrderPaid(): invoiceSource = ' . var_export($invoiceSource->getSource(), true));
         return true;
     }
 
