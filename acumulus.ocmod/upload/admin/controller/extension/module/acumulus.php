@@ -132,6 +132,21 @@ class ControllerExtensionModuleAcumulus extends Controller
     }
 
     /**
+     * Event handler that executes on the creation or update of an order.
+     *
+     * The arguments passed in depend on the version of OC (and possibly if it
+     * is OC self or another plugin that triggered the event).
+     *
+     * Note: in admin it can only be another plugin as OC self redirects to the
+     * catalog part to update an order.
+     */
+    public function eventOrderUpdate()
+    {
+        $order_id = $this->ocHelper->extractOrderId(func_get_args());
+        $this->ocHelper->eventOrderUpdate((int) $order_id);
+    }
+
+    /**
      * Adds our menu-items to the admin menu.
      *
      * @param string $route
