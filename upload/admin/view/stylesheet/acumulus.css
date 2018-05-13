@@ -1,3 +1,19 @@
+/* Largely copied from bootstrap.css legend */
+.form-horizontal summary.form-group {
+  display: list-item; /* To get the arrow. */
+  font-size: 19.5px;
+  line-height: inherit;
+  color: #333;
+  border: 0;
+  border-bottom: 1px solid #e5e5e5;
+  cursor: pointer;
+}
+
+.form-horizontal summary.form-group:before {
+  content: "";
+  display: none;
+}
+
 h2 {
     margin-top: 2em;
 }
@@ -6,7 +22,8 @@ form h2:first-child {
     margin-top: 0;
 }
 
-.form-horizontal legend.form-group {
+.form-horizontal legend.form-group,
+.form-horizontal summary.form-group {
     margin-top: 2em;
     border-top: solid 2px #e5e5e5;
     border-bottom-width: 0;
