@@ -1,15 +1,19 @@
 <?php
-
-/** @noinspection PhpUndefinedClassInspection */
 /**
+ * @noinspection PhpUndefinedClassInspection
+ * @noinspection DuplicatedCode
+ */
+use Siel\Acumulus\Helpers\Container;
+
+/*
  * This is the Acumulus catalog side controller.
  */
 class ControllerExtensionModuleAcumulus extends Controller
 {
-    /** @var \Siel\Acumulus\OpenCart\OpenCart2\OpenCart23\Helpers\OcHelper */
+    /** @var \Siel\Acumulus\OpenCart\Helpers\OcHelper */
     static private $staticOcHelper = null;
 
-    /** @var \Siel\Acumulus\OpenCart\OpenCart2\OpenCart23\Helpers\OcHelper */
+    /** @var \Siel\Acumulus\OpenCart\Helpers\OcHelper */
     private $ocHelper = null;
 
     /**
@@ -19,6 +23,7 @@ class ControllerExtensionModuleAcumulus extends Controller
      */
     public function __construct($registry)
     {
+        /** @noinspection DuplicatedCode */
         parent::__construct($registry);
         if ($this->ocHelper === NULL) {
             if (static::$staticOcHelper === NULL) {
@@ -26,8 +31,7 @@ class ControllerExtensionModuleAcumulus extends Controller
                 // OC1, OC2 and OC3 shared code.
                 require_once(DIR_SYSTEM . 'library/siel/acumulus/SielAcumulusAutoloader.php');
                 SielAcumulusAutoloader::register();
-                // Language will be set by the helper (as it is common code).
-                $container = new \Siel\Acumulus\Helpers\Container($this->getShopNamespace());
+                $container = new Container($this->getShopNamespace());
                 static::$staticOcHelper = $container->getInstance('OcHelper', 'Helpers', array($this->registry, $container));
             }
             $this->ocHelper = static::$staticOcHelper;
@@ -42,8 +46,9 @@ class ControllerExtensionModuleAcumulus extends Controller
      */
     protected function getShopNamespace()
     {
-        $result = sprintf('OpenCart\OpenCart%1$u\OpenCart%1$u%2$u', substr(VERSION, 0, 1), substr(VERSION, 2, 1));
-        return $result;
+        return sprintf('OpenCart\OpenCart%1$u\OpenCart%1$u%2$u',
+            substr(VERSION, 0, 1),
+            substr(VERSION, 2, 1));
     }
 
     /**
@@ -54,6 +59,8 @@ class ControllerExtensionModuleAcumulus extends Controller
      *
      * Note: in admin it can only be another plugin as OC self redirects to the
      * catalog part to update an order.
+     *
+     * @noinspection PhpUnused
      */
     public function eventOrderUpdate()
     {

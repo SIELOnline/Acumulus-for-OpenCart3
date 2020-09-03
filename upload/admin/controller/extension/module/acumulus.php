@@ -1,5 +1,4 @@
 <?php
-
 /** @noinspection PhpUndefinedClassInspection */
 /**
  * This is the Acumulus admin side controller.
@@ -44,8 +43,7 @@ class ControllerExtensionModuleAcumulus extends Controller
      */
     protected function getShopNamespace()
     {
-        $result = sprintf('OpenCart\OpenCart%1$u\OpenCart%1$u%2$u', substr(VERSION, 0, 1), substr(VERSION, 2, 1));
-        return $result;
+        return sprintf('OpenCart\OpenCart%1$u\OpenCart%1$u%2$u', substr(VERSION, 0, 1), substr(VERSION, 2, 1));
     }
 
     /**
