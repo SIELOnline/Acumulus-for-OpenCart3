@@ -79,3 +79,17 @@ form h2:first-child {
 fieldset > .description {
     margin-left: 0;
 }
+
+/*
+ * Register form
+ */
+/* Align text with logo */
+#intro {
+  position: relative;
+  top: 12px;
+}
+
+/* make remarks textarea a bit wider */
+#notes {
+  width: 80%;
+}

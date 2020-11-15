@@ -47,7 +47,7 @@ class ControllerExtensionModuleAcumulus extends Controller
     }
 
     /**
-     * Returns whether we are in version 2.3+ or lower.
+     * Returns whether we are in version 2.3+ or higher.
      *
      * @return bool
      *   True if the version is 2.3 or higher, false otherwise.
@@ -115,6 +115,14 @@ class ControllerExtensionModuleAcumulus extends Controller
     public function batch()
     {
         $this->ocHelper->batch();
+    }
+
+    /**
+     * Controller action: show/process the register form for this module.
+     */
+    public function register()
+    {
+        $this->ocHelper->register();
     }
 
     /**
