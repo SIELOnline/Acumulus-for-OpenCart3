@@ -90,8 +90,7 @@ class ControllerExtensionModuleAcumulus extends Controller
     }
 
     /**
-     * Main controller action: show/process the basic settings form for this
-     * module.
+     * Main controller action: show/process the basic settings form.
      *
      * @throws \Exception
      */
@@ -101,8 +100,7 @@ class ControllerExtensionModuleAcumulus extends Controller
     }
 
     /**
-     * Controller action: show/process the advanced settings form for this
-     * module.
+     * Controller action: show/process the advanced settings form.
      */
     public function advanced()
     {
@@ -110,7 +108,7 @@ class ControllerExtensionModuleAcumulus extends Controller
     }
 
     /**
-     * Controller action: show/process the batch form for this module.
+     * Controller action: show/process the batch form.
      */
     public function batch()
     {
@@ -118,11 +116,19 @@ class ControllerExtensionModuleAcumulus extends Controller
     }
 
     /**
-     * Controller action: show/process the register form for this module.
+     * Controller action: show/process the register form.
      */
     public function register()
     {
         $this->ocHelper->register();
+    }
+
+    /**
+     * Controller action: show/process the invoice status overview form.
+     */
+    public function invoice()
+    {
+        $this->ocHelper->invoice();
     }
 
     /**
@@ -145,6 +151,8 @@ class ControllerExtensionModuleAcumulus extends Controller
      *
      * Note: in admin it can only be another plugin as OC self redirects to the
      * catalog part to update an order.
+     *
+     * @noinspection PhpUnused event handler
      */
     public function eventOrderUpdate()
     {
@@ -159,11 +167,50 @@ class ControllerExtensionModuleAcumulus extends Controller
      *   The current route (common/column_left).
      * @param array $data
      *   The data as will be passed to the view.
+     *
+     * @noinspection PhpUnused event handler
      */
     public function eventViewColumnLeft(/** @noinspection PhpUnusedParameterInspection */$route, &$data)
     {
         if ($this->user->hasPermission('access', $this->getLocation())) {
             $this->ocHelper->eventViewColumnLeft($data['menus']);
+        }
+    }
+
+    /**
+     * Adds our menu-items to the admin menu.
+     *
+     * @param string $route
+     *   The current route (common/column_left).
+     * @param array $data
+     *   The data as will be passed to the view.
+     * @param string $code
+     *
+     * @noinspection PhpUnused event handler
+     */
+    public function eventControllerSaleOrderInfo()
+    {
+        $args = func_get_args();
+        if ($this->user->hasPermission('access', $this->getLocation())) {
+            $this->ocHelper->eventControllerSaleOrderInfo();
+        }
+    }
+
+    /**
+     * Adds our menu-items to the admin menu.
+     *
+     * @param string $route
+     *   The current route (common/column_left).
+     * @param array $data
+     *   The data as will be passed to the view.
+     * @param string $code
+     *
+     * @noinspection PhpUnused event handler
+     */
+    public function eventViewSaleOrderInfo(/** @noinspection PhpUnusedParameterInspection */$route, &$data, /** @noinspection PhpUnusedParameterInspection */&$code)
+    {
+        if ($this->user->hasPermission('access', $this->getLocation())) {
+            $this->ocHelper->eventViewSaleOrderInfo($data['order_id'], $data['tabs']);
         }
     }
 }
