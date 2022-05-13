@@ -1,5 +1,13 @@
 <?php
-/** @noinspection PhpUndefinedClassInspection */
+/**
+ * @noinspection PhpMissingParamTypeInspection
+ * @noinspection PhpMissingReturnTypeInspection
+ * @noinspection PhpMultipleClassDeclarationsInspection
+ * @noinspection PhpUndefinedClassInspection
+ */
+
+use Siel\Acumulus\Helpers\Container;
+
 /**
  * This is the Acumulus admin side controller.
  *
@@ -7,10 +15,10 @@
  */
 class ControllerExtensionModuleAcumulus extends Controller
 {
-    /** @var \Siel\Acumulus\OpenCart\OpenCart2\OpenCart23\Helpers\OcHelper */
+    /** @var \Siel\Acumulus\OpenCart\Helpers\OcHelper */
     static private $staticOcHelper = null;
 
-    /** @var \Siel\Acumulus\OpenCart\OpenCart2\OpenCart23\Helpers\OcHelper */
+    /** @var \Siel\Acumulus\OpenCart\Helpers\OcHelper */
     private $ocHelper = null;
 
     /**
@@ -20,6 +28,7 @@ class ControllerExtensionModuleAcumulus extends Controller
      */
     public function __construct($registry)
     {
+        /** @noinspection DuplicatedCode */
         parent::__construct($registry);
         if ($this->ocHelper === NULL) {
             if (static::$staticOcHelper === NULL) {
@@ -27,35 +36,12 @@ class ControllerExtensionModuleAcumulus extends Controller
                 // OC1, OC2 and OC3 shared code.
                 require_once(DIR_SYSTEM . 'library/siel/acumulus/SielAcumulusAutoloader.php');
                 SielAcumulusAutoloader::register();
-                // Language will be set by the helper (as it is common code).
-                $container = new \Siel\Acumulus\Helpers\Container($this->getShopNamespace());
+                // Language will be set by the helper.
+                $container = new Container('OpenCart');
                 static::$staticOcHelper = $container->getInstance('OcHelper', 'Helpers', array($this->registry, $container));
             }
             $this->ocHelper = static::$staticOcHelper;
         }
-    }
-
-    /**
-     * Returns the Shop namespace to use for this OC version.
-     *
-     * @return string
-     *   The Shop namespace to use for this OC version.
-     */
-    protected function getShopNamespace()
-    {
-        return sprintf('OpenCart\OpenCart%1$u\OpenCart%1$u%2$u', substr(VERSION, 0, 1), substr(VERSION, 2, 1));
-    }
-
-    /**
-     * Returns whether we are in version 2.3+ or higher.
-     *
-     * @return bool
-     *   True if the version is 2.3 or higher, false otherwise.
-     *
-     */
-    protected function isOc23()
-    {
-        return version_compare(VERSION, '2.3', '>=');
     }
 
     /**
@@ -66,7 +52,7 @@ class ControllerExtensionModuleAcumulus extends Controller
      */
     protected function getLocation()
     {
-        return $this->isOc23() ? 'extension/module/acumulus' : 'module/acumulus';
+        return 'extension/module/acumulus';
     }
 
     /**
@@ -134,9 +120,11 @@ class ControllerExtensionModuleAcumulus extends Controller
     /**
      * Explicit confirmation step to allow to retain the settings.
      *
-     * The normal uninstall action will unconditionally delete all settings.
+     * The normal uninstallation action will unconditionally delete all settings.
      *
      * @throws \Exception
+     *
+     * @noinspection PhpUnused : event handler
      */
     public function confirmUninstall()
     {
@@ -157,7 +145,7 @@ class ControllerExtensionModuleAcumulus extends Controller
     public function eventOrderUpdate()
     {
         $order_id = $this->ocHelper->extractOrderId(func_get_args());
-        $this->ocHelper->eventOrderUpdate((int) $order_id);
+        $this->ocHelper->eventOrderUpdate($order_id);
     }
 
     /**
@@ -168,7 +156,7 @@ class ControllerExtensionModuleAcumulus extends Controller
      * @param array $data
      *   The data as will be passed to the view.
      *
-     * @noinspection PhpUnused event handler
+     * @noinspection PhpUnused : event handler
      */
     public function eventViewColumnLeft(/** @noinspection PhpUnusedParameterInspection */$route, &$data)
     {
@@ -180,17 +168,16 @@ class ControllerExtensionModuleAcumulus extends Controller
     /**
      * Adds our menu-items to the admin menu.
      *
-     * @param string $route
+     * param string $route
      *   The current route (common/column_left).
-     * @param array $data
+     * param array $data
      *   The data as will be passed to the view.
-     * @param string $code
+     * param string $code
      *
-     * @noinspection PhpUnused event handler
+     * @noinspection PhpUnused : event handler
      */
     public function eventControllerSaleOrderInfo()
     {
-        $args = func_get_args();
         if ($this->user->hasPermission('access', $this->getLocation())) {
             $this->ocHelper->eventControllerSaleOrderInfo();
         }
@@ -205,10 +192,13 @@ class ControllerExtensionModuleAcumulus extends Controller
      *   The data as will be passed to the view.
      * @param string $code
      *
-     * @noinspection PhpUnused event handler
+     * @noinspection PhpUnused : event handler
      */
-    public function eventViewSaleOrderInfo(/** @noinspection PhpUnusedParameterInspection */$route, &$data, /** @noinspection PhpUnusedParameterInspection */&$code)
-    {
+    public function eventViewSaleOrderInfo(
+        /** @noinspection PhpUnusedParameterInspection */$route,
+        &$data,
+        /** @noinspection PhpUnusedParameterInspection */&$code
+    ) {
         if ($this->user->hasPermission('access', $this->getLocation())) {
             $this->ocHelper->eventViewSaleOrderInfo($data['order_id'], $data['tabs']);
         }
