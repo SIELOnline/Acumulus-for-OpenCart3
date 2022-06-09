@@ -1,4 +1,6 @@
-/* Largely copied from bootstrap.css legend */
+/*
+ * Largely copied from bootstrap.css legend
+ */
 .form-horizontal summary.form-group {
   display: list-item; /* To get the arrow. */
   font-size: 19.5px;
@@ -97,7 +99,6 @@ fieldset > .description {
 /*
  * Acumulus invoice status overview "form".
  */
-
 .nav > li > a[href="#tab-acumulus-invoice"] {
   background-image: url("../image/acumulus/siel-logo.png");
   background-size: 16px;
@@ -210,6 +211,33 @@ fieldset > .description {
 
 #tab-acumulus-invoice .adminform > .form-group:last-child {
   border-top: 1px solid #ededed;
+}
+
+/*
+ * About block
+ */
+.acumulus-blue {
+    color: #01a6d4;
+}
+
+.acumulus-light-green {
+    color: #f0fff0;
+}
+
+.button-pro-support {
+    display: inline-block;
+    transition: background-color 0.5s ease;
+    background-color: #f0fff0;
+    border-color: #000000;
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 12px;
+    padding: 6px 20px;
+    margin-top: 5px;
+}
+
+.button-pro-support:hover {
+    background: #01a6d4;
 }
 
 /*

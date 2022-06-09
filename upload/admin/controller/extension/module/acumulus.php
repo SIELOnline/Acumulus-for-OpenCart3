@@ -78,7 +78,7 @@ class ControllerExtensionModuleAcumulus extends Controller
     /**
      * Main controller action: show/process the basic settings form.
      *
-     * @throws \Exception
+     * @throws \Throwable
      */
     public function index()
     {
@@ -87,6 +87,8 @@ class ControllerExtensionModuleAcumulus extends Controller
 
     /**
      * Controller action: show/process the advanced settings form.
+     *
+     * @throws \Throwable
      */
     public function advanced()
     {
@@ -95,6 +97,8 @@ class ControllerExtensionModuleAcumulus extends Controller
 
     /**
      * Controller action: show/process the batch form.
+     *
+     * @throws \Throwable
      */
     public function batch()
     {
@@ -102,7 +106,19 @@ class ControllerExtensionModuleAcumulus extends Controller
     }
 
     /**
+     * Controller action: show/process the "Activate pro-support" form.
+     *
+     * @throws \Throwable
+     */
+    public function activate()
+    {
+        $this->ocHelper->activate();
+    }
+
+    /**
      * Controller action: show/process the register form.
+     *
+     * @throws \Throwable
      */
     public function register()
     {
@@ -111,24 +127,12 @@ class ControllerExtensionModuleAcumulus extends Controller
 
     /**
      * Controller action: show/process the invoice status overview form.
+     *
+     * @throws \Throwable
      */
     public function invoice()
     {
         $this->ocHelper->invoice();
-    }
-
-    /**
-     * Explicit confirmation step to allow to retain the settings.
-     *
-     * The normal uninstallation action will unconditionally delete all settings.
-     *
-     * @throws \Exception
-     *
-     * @noinspection PhpUnused : event handler
-     */
-    public function confirmUninstall()
-    {
-        $this->ocHelper->confirmUninstall();
     }
 
     /**
@@ -191,6 +195,8 @@ class ControllerExtensionModuleAcumulus extends Controller
      * @param array $data
      *   The data as will be passed to the view.
      * @param string $code
+     *
+     * @throws \Throwable
      *
      * @noinspection PhpUnused : event handler
      */
