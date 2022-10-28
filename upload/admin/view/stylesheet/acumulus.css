@@ -144,19 +144,22 @@ fieldset > .description {
 }
 
 #tab-acumulus-invoice [class*="acumulus-document"] {
-    display: inline-block;
     padding-left: 34px;
     margin-right: 1em;
     background-size: 21px 28px;
     background-repeat: no-repeat;
     background-position: left center;
     background-position-x: 6px;
-    width: 10.5em;
+    min-width: 10.5em;
     height: 36px;
 }
 
 #tab-acumulus-invoice a[class*="acumulus-document"] {
     padding-top: 8px;
+}
+
+#tab-acumulus-invoice input[class*="acumulus-document"]:first-of-type {
+    margin-left: 16.6666666667%;
 }
 
 #tab-acumulus-invoice [class*="acumulus-document-invoice"] {
