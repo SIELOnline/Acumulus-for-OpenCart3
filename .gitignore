@@ -9,3 +9,6 @@ interdiff.txt
 
 # Resulting zip
 *.ocmod.zip
+
+# Library
+upload/system/library/
