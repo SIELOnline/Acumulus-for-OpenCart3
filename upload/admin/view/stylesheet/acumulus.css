@@ -82,6 +82,10 @@ fieldset > .description {
     margin-left: 0;
 }
 
+details summary span {
+    margin-left: 1em;
+}
+
 /*
  * Register form
  */
