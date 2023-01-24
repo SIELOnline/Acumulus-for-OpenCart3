@@ -1,12 +1,16 @@
 <?php
 /**
+ * @noinspection AutoloadingIssuesInspection
  * @noinspection PhpMissingParamTypeInspection
  * @noinspection PhpMissingReturnTypeInspection
  * @noinspection PhpMultipleClassDeclarationsInspection
  * @noinspection PhpUndefinedClassInspection
  */
 
+declare(strict_types=1);
+
 use Siel\Acumulus\Helpers\Container;
+use Siel\Acumulus\OpenCart\OpenCart3\Helpers\OcHelper;
 
 /**
  * This is the Acumulus admin side controller.
@@ -15,11 +19,8 @@ use Siel\Acumulus\Helpers\Container;
  */
 class ControllerExtensionModuleAcumulus extends Controller
 {
-    /** @var \Siel\Acumulus\OpenCart\Helpers\OcHelper */
-    static private $staticOcHelper = null;
-
-    /** @var \Siel\Acumulus\OpenCart\Helpers\OcHelper */
-    private $ocHelper = null;
+    private static OcHelper $staticOcHelper;
+    private OcHelper $ocHelper;
 
     /**
      * Constructor.
@@ -30,15 +31,15 @@ class ControllerExtensionModuleAcumulus extends Controller
     {
         /** @noinspection DuplicatedCode */
         parent::__construct($registry);
-        if ($this->ocHelper === NULL) {
-            if (static::$staticOcHelper === NULL) {
+        if (isset($this->ocHelper)) {
+            if (isset(static::$staticOcHelper)) {
                 // Load autoloader, container and then our helper that contains
-                // OC1, OC2 and OC3 shared code.
+                // OC3 and OC4 shared code.
                 require_once(DIR_SYSTEM . 'library/siel/acumulus/SielAcumulusAutoloader.php');
                 SielAcumulusAutoloader::register();
-                // Language will be set by the helper.
-                $container = new Container('OpenCart');
-                static::$staticOcHelper = $container->getInstance('OcHelper', 'Helpers', array($this->registry, $container));
+                $container = new Container('OpenCart\OpenCart3');
+                /** @noinspection PhpFieldAssignmentTypeMismatchInspection */
+                static::$staticOcHelper = $container->getInstance('OcHelper', 'Helpers', [$this->registry, $container]);
             }
             $this->ocHelper = static::$staticOcHelper;
         }
@@ -50,7 +51,7 @@ class ControllerExtensionModuleAcumulus extends Controller
      * @return string
      *   The location of the extension's files.
      */
-    protected function getLocation()
+    protected function getLocation(): string
     {
         return 'extension/module/acumulus';
     }
@@ -60,7 +61,7 @@ class ControllerExtensionModuleAcumulus extends Controller
      *
      * @throws \Exception
      */
-    public function install()
+    public function install(): void
     {
         $this->ocHelper->install();
     }
@@ -70,7 +71,7 @@ class ControllerExtensionModuleAcumulus extends Controller
      *
      * @throws \Exception
      */
-    public function uninstall()
+    public function uninstall(): void
     {
         $this->ocHelper->uninstall();
     }
@@ -80,7 +81,7 @@ class ControllerExtensionModuleAcumulus extends Controller
      *
      * @throws \Throwable
      */
-    public function index()
+    public function index(): void
     {
         $this->ocHelper->config();
     }
@@ -90,7 +91,7 @@ class ControllerExtensionModuleAcumulus extends Controller
      *
      * @throws \Throwable
      */
-    public function advanced()
+    public function advanced(): void
     {
         $this->ocHelper->advancedConfig();
     }
@@ -100,7 +101,7 @@ class ControllerExtensionModuleAcumulus extends Controller
      *
      * @throws \Throwable
      */
-    public function batch()
+    public function batch(): void
     {
         $this->ocHelper->batch();
     }
@@ -110,7 +111,7 @@ class ControllerExtensionModuleAcumulus extends Controller
      *
      * @throws \Throwable
      */
-    public function activate()
+    public function activate(): void
     {
         $this->ocHelper->activate();
     }
@@ -120,7 +121,7 @@ class ControllerExtensionModuleAcumulus extends Controller
      *
      * @throws \Throwable
      */
-    public function register()
+    public function register(): void
     {
         $this->ocHelper->register();
     }
@@ -130,7 +131,7 @@ class ControllerExtensionModuleAcumulus extends Controller
      *
      * @throws \Throwable
      */
-    public function invoice()
+    public function invoice(): void
     {
         $this->ocHelper->invoice();
     }
@@ -146,9 +147,9 @@ class ControllerExtensionModuleAcumulus extends Controller
      *
      * @noinspection PhpUnused event handler
      */
-    public function eventOrderUpdate()
+    public function eventOrderUpdate(...$args): void
     {
-        $order_id = $this->ocHelper->extractOrderId(func_get_args());
+        $order_id = $this->ocHelper->extractOrderId($args);
         $this->ocHelper->eventOrderUpdate($order_id);
     }
 
@@ -162,7 +163,7 @@ class ControllerExtensionModuleAcumulus extends Controller
      *
      * @noinspection PhpUnused : event handler
      */
-    public function eventViewColumnLeft(/** @noinspection PhpUnusedParameterInspection */$route, &$data)
+    public function eventViewColumnLeft(/** @noinspection PhpUnusedParameterInspection */$route, &$data): void
     {
         if ($this->user->hasPermission('access', $this->getLocation())) {
             $this->ocHelper->eventViewColumnLeft($data['menus']);
@@ -180,7 +181,7 @@ class ControllerExtensionModuleAcumulus extends Controller
      *
      * @noinspection PhpUnused : event handler
      */
-    public function eventControllerSaleOrderInfo()
+    public function eventControllerSaleOrderInfo(): void
     {
         if ($this->user->hasPermission('access', $this->getLocation())) {
             $this->ocHelper->eventControllerSaleOrderInfo();
@@ -204,7 +205,7 @@ class ControllerExtensionModuleAcumulus extends Controller
         /** @noinspection PhpUnusedParameterInspection */$route,
         &$data,
         /** @noinspection PhpUnusedParameterInspection */&$code
-    ) {
+    ): void {
         if ($this->user->hasPermission('access', $this->getLocation())) {
             $this->ocHelper->eventViewSaleOrderInfo($data['order_id'], $data['tabs']);
         }
