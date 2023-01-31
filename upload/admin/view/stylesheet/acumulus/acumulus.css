@@ -2,18 +2,18 @@
  * Largely copied from bootstrap.css legend
  */
 .form-horizontal summary.form-group {
-  display: list-item; /* To get the arrow. */
-  font-size: 19.5px;
-  line-height: inherit;
-  color: #333;
-  border: 0;
-  border-bottom: 1px solid #e5e5e5;
-  cursor: pointer;
+    display: list-item; /* To get the arrow. */
+    font-size: 19.5px;
+    line-height: inherit;
+    color: #333;
+    border: 0;
+    border-bottom: 1px solid #e5e5e5;
+    cursor: pointer;
 }
 
 .form-horizontal summary.form-group:before {
-  content: "";
-  display: none;
+    content: "";
+    display: none;
 }
 
 h2 {
@@ -91,151 +91,144 @@ details summary span {
  */
 /* Align text with logo */
 #intro {
-  position: relative;
-  top: 12px;
+    position: relative;
+    top: 12px;
 }
 
 /* make remarks textarea a bit wider */
 #notes {
-  width: 80%;
+    width: 80%;
 }
 
 /*
  * Acumulus invoice status overview "form".
  */
 .nav > li > a[href="#tab-acumulus-invoice"] {
-  background-image: url("../image/acumulus/siel-logo.png");
-  background-size: 16px;
-  background-repeat: no-repeat;
-  background-position: 15px center;
-  padding-left: 34px;
+    background-image: url("../../image/acumulus/siel-logo.png");
+    background-size: 16px;
+    background-repeat: no-repeat;
+    background-position: 15px center;
+    padding-left: 34px;
 }
 
 #tab-acumulus-invoice .inside {
-  padding-right: 0;
-  line-height: 1.4em;
+    padding-right: 0;
+    line-height: 1.4em;
 }
 
 /* Refund overview */
 #tab-acumulus-invoice details {
-  font-size: 13px;
-  border: none;
+    font-size: 13px;
+    border: none;
 }
 
 #tab-acumulus-invoice .invoice-sent-concept {
-  float: left;
-  width: 85%;
+    float: left;
+    width: 85%;
 }
 
 /* Refund overview title */
 #tab-acumulus-invoice summary {
-  font-size: 14px;
-  border-bottom: 1px solid #eee;
-  padding-bottom: 8px;
-  margin-bottom: 6px;
+    font-size: 14px;
+    border-bottom: 1px solid #eee;
+    padding-bottom: 8px;
+    margin-bottom: 6px;
 }
 
 #tab-acumulus-invoice .label {
-  text-align: left;
-  vertical-align: top;
-  font-weight: normal;
-  display: inline-block;
-  padding-right: 1em;
-}
-
-[class*="acumulus-document"] {
+    text-align: left;
+    vertical-align: top;
+    font-weight: normal;
     display: inline-block;
+    padding-right: 1em;
 }
 
-#tab-acumulus-invoice [class*="acumulus-document"] {
+#tab-acumulus-invoice .acumulus-links {
+    padding-left: 0;
+}
+
+#tab-acumulus-invoice .form-group [class*="acumulus-document"] {
     padding-left: 34px;
     margin-right: 1em;
     background-size: 21px 28px;
     background-repeat: no-repeat;
     background-position: left center;
     background-position-x: 6px;
-    min-width: 10.5em;
+    min-width: 10.7em;
     height: 36px;
 }
 
 #tab-acumulus-invoice a[class*="acumulus-document"] {
-    padding-top: 8px;
+    display: inline-block;
+    padding: 8px 13px;
 }
 
-#tab-acumulus-invoice input[class*="acumulus-document"]:first-of-type {
-    margin-left: 16.6666666667%;
+#tab-acumulus-invoice .acumulus-links + input[class*="acumulus-document"] {
+    margin-left: 16.666667%;
 }
 
 #tab-acumulus-invoice [class*="acumulus-document-invoice"] {
-    background-image: url("../image/acumulus/acumulus-invoice.png");
+    background-image: url("../../image/acumulus/acumulus-invoice.png");
 }
 
 #tab-acumulus-invoice [class*="acumulus-document-packing-slip"] {
-    background-image: url("../image/acumulus/acumulus-packing-slip.png");
+    background-image: url("../../image/acumulus/acumulus-packing-slip.png");
 }
 
 #tab-acumulus-invoice .notice {
-  box-shadow: none;
-  margin: 0;
-  border-top-width: 0;
-  border-right-width: 0;
-  border-bottom-width:  0;
+    box-shadow: none;
+    margin: 0;
+    border-top-width: 0;
+    border-right-width: 0;
+    border-bottom-width: 0;
 }
 
 #tab-acumulus-invoice .notice-info {
-  color: #00a0d2;
+    color: #00a0d2;
 }
 
 #tab-acumulus-invoice .notice-warning {
-  color: #ffb900;
+    color: #ffb900;
 }
 
 #tab-acumulus-invoice label.notice-warning {
-  font-weight: 900;
+    font-weight: 900;
 }
 
 #tab-acumulus-invoice .notice-error {
-  color: #bc3232;
+    color: #bc3232;
 }
 
 #tab-acumulus-invoice .notice-success {
-  color: #46b450;
-}
-
-#tab-acumulus-invoice .adminform > .form-group:nth-child(3) > div {
-  float: left;
-}
-
-#tab-acumulus-invoice .adminform > .form-group:nth-child(4) {
-  clear: left;
+    color: #46b450;
 }
 
 .acumulus-amount .amount {
-  display: block;
-  width: 6em;
-  text-align: right;
+    display: block;
+    width: 6em;
+    text-align: right;
 }
 
 .acumulus-amount .amount:nth-child(2) {
-  display: inline-block;
+    display: inline-block;
 }
 
 .acumulus-amount .amount:last-child {
-  border-top: 1px solid #444;
+    border-top: 1px solid #444;
 }
 
 .acumulus-amount .amount .sign,
 .acumulus-amount .amount .currency {
-  float: left;
-  width: 0.25em;
+    float: left;
+    width: 0.25em;
 }
 
 #tab-acumulus-invoice .adminform > .form-group:nth-child(6) {
-  border-top-width: 0;
+    border-top-width: 0;
 }
 
 #tab-acumulus-invoice .adminform > .form-group:last-child {
-  border-top: 1px solid #ededed;
+    border-top: 1px solid #ededed;
 }
 
 /*
@@ -269,42 +262,42 @@ details summary span {
  * EU Commerce threshold progress bar
  */
 .acumulus-progressbar, .acumulus-progress, .acumulus-threshold {
-  display: inline-block;
+    display: inline-block;
 }
 
 .acumulus-progressbar {
-  box-sizing: border-box;
-  position: relative;
-  width: 75%;
-  max-width: 20em;
-  height: 2em;
-  border-radius: 16px;
-  background-color: lightgrey;
+    box-sizing: border-box;
+    position: relative;
+    width: 75%;
+    max-width: 20em;
+    height: 2em;
+    border-radius: 16px;
+    background-color: lightgrey;
 }
 
 .acumulus-progress {
-  box-sizing: border-box;
-  padding: 2px 0.5em 0;
-  border-radius: inherit;
-  height: 100%;
+    box-sizing: border-box;
+    padding: 2px 0.5em 0;
+    border-radius: inherit;
+    height: 100%;
 }
 
 .acumulus-error {
-  background-color: #bc3232;
-  color: white;
+    background-color: #bc3232;
+    color: white;
 }
 
 .acumulus-warning {
-  background-color: #ffb900;
+    background-color: #ffb900;
 }
 
 .acumulus-ok {
-  background-color: #46b450;
+    background-color: #46b450;
 }
 
 .acumulus-threshold {
-  box-sizing: border-box;
-  padding-left: 0.3em;
-  width: 24%;
-  height: 2em;
+    box-sizing: border-box;
+    padding-left: 0.3em;
+    width: 24%;
+    height: 2em;
 }
