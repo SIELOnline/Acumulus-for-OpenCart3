@@ -10,7 +10,7 @@
 declare(strict_types=1);
 
 use Siel\Acumulus\Helpers\Container;
-use Siel\Acumulus\OpenCart\OpenCart3\Helpers\OcHelper;
+use Siel\Acumulus\OpenCart\Helpers\OcHelper;
 
 /**
  * This is the Acumulus admin side controller.
@@ -31,12 +31,13 @@ class ControllerExtensionModuleAcumulus extends Controller
     {
         /** @noinspection DuplicatedCode */
         parent::__construct($registry);
-        if (isset($this->ocHelper)) {
-            if (isset(static::$staticOcHelper)) {
-                // Load autoloader, container and then our helper that contains
+        if (!isset($this->ocHelper)) {
+            if (!isset(static::$staticOcHelper)) {
+                // Load autoloader, container, and then our helper that contains
                 // OC3 and OC4 shared code.
                 require_once(DIR_SYSTEM . 'library/siel/acumulus/SielAcumulusAutoloader.php');
                 SielAcumulusAutoloader::register();
+                // Language will be set by the helper.
                 $container = new Container('OpenCart\OpenCart3');
                 /** @noinspection PhpFieldAssignmentTypeMismatchInspection */
                 static::$staticOcHelper = $container->getInstance('OcHelper', 'Helpers', [$this->registry, $container]);
@@ -51,9 +52,9 @@ class ControllerExtensionModuleAcumulus extends Controller
      * @return string
      *   The location of the extension's files.
      */
-    protected function getLocation(): string
+    protected function getRoute(): string
     {
-        return 'extension/module/acumulus';
+        return \Siel\Acumulus\OpenCart\Helpers\Registry::getInstance()->getRoute('');
     }
 
     /**
@@ -77,11 +78,21 @@ class ControllerExtensionModuleAcumulus extends Controller
     }
 
     /**
-     * Main controller action: show/process the basic settings form.
+     * Main controller action: the config form.
      *
      * @throws \Throwable
      */
     public function index(): void
+    {
+        $this->config();
+    }
+
+    /**
+     * Controller action: show/process the basic settings form.
+     *
+     * @throws \Throwable
+     */
+    public function config(): void
     {
         $this->ocHelper->config();
     }
@@ -165,7 +176,7 @@ class ControllerExtensionModuleAcumulus extends Controller
      */
     public function eventViewColumnLeft(/** @noinspection PhpUnusedParameterInspection */$route, &$data): void
     {
-        if ($this->user->hasPermission('access', $this->getLocation())) {
+        if ($this->user->hasPermission('access', $this->getRoute())) {
             $this->ocHelper->eventViewColumnLeft($data['menus']);
         }
     }
@@ -183,7 +194,7 @@ class ControllerExtensionModuleAcumulus extends Controller
      */
     public function eventControllerSaleOrderInfo(): void
     {
-        if ($this->user->hasPermission('access', $this->getLocation())) {
+        if ($this->user->hasPermission('access', $this->getRoute())) {
             $this->ocHelper->eventControllerSaleOrderInfo();
         }
     }
@@ -206,7 +217,7 @@ class ControllerExtensionModuleAcumulus extends Controller
         &$data,
         /** @noinspection PhpUnusedParameterInspection */&$code
     ): void {
-        if ($this->user->hasPermission('access', $this->getLocation())) {
+        if ($this->user->hasPermission('access', $this->getRoute())) {
             $this->ocHelper->eventViewSaleOrderInfo($data['order_id'], $data['tabs']);
         }
     }
