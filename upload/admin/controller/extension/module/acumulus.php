@@ -218,7 +218,7 @@ class ControllerExtensionModuleAcumulus extends Controller
         /** @noinspection PhpUnusedParameterInspection */&$code
     ): void {
         if ($this->user->hasPermission('access', $this->getRoute())) {
-            $this->ocHelper->eventViewSaleOrderInfo($data['order_id'], $data['tabs']);
+            $this->ocHelper->eventViewSaleOrderInfo((int) $data['order_id'], $data['tabs']);
         }
     }
 }

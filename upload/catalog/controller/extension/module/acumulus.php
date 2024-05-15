@@ -29,8 +29,8 @@ class ControllerExtensionModuleAcumulus extends Controller
     {
         /** @noinspection DuplicatedCode */
         parent::__construct($registry);
-        if (isset($this->ocHelper)) {
-            if (isset(static::$staticOcHelper)) {
+        if (!isset($this->ocHelper)) {
+            if (!isset(static::$staticOcHelper)) {
                 // Load autoloader, container and then our helper that contains
                 // OC3 and OC4 shared code.
                 require_once(DIR_SYSTEM . 'library/siel/acumulus/SielAcumulusAutoloader.php');
