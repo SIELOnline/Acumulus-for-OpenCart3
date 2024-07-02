@@ -83,7 +83,9 @@ fieldset > .description {
 }
 
 details summary span {
-    margin-left: 1em;
+    display: inline-block;
+    font-size: small;
+    padding-left: 1em;
 }
 
 /*

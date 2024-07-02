@@ -17,8 +17,7 @@ use Siel\Acumulus\OpenCart\OpenCart3\Helpers\OcHelper;
  */
 class ControllerExtensionModuleAcumulus extends Controller
 {
-    private static OcHelper $staticOcHelper;
-    private OcHelper $ocHelper;
+    private static OcHelper $ocHelper;
 
     /**
      * Constructor.
@@ -29,17 +28,13 @@ class ControllerExtensionModuleAcumulus extends Controller
     {
         /** @noinspection DuplicatedCode */
         parent::__construct($registry);
-        if (!isset($this->ocHelper)) {
-            if (!isset(static::$staticOcHelper)) {
-                // Load autoloader, container and then our helper that contains
-                // OC3 and OC4 shared code.
-                require_once(DIR_SYSTEM . 'library/siel/acumulus/SielAcumulusAutoloader.php');
-                SielAcumulusAutoloader::register();
-                $container = new Container('OpenCart\OpenCart3');
-                /** @noinspection PhpFieldAssignmentTypeMismatchInspection */
-                static::$staticOcHelper = $container->getInstance('OcHelper', 'Helpers', [$this->registry, $container]);
-            }
-            $this->ocHelper = static::$staticOcHelper;
+        if (!isset(static::$ocHelper)) {
+            // Load autoloader, container and then our helper that contains
+            // OC3 and OC4 shared code.
+            require_once(DIR_SYSTEM . 'library/siel/acumulus/SielAcumulusAutoloader.php');
+            SielAcumulusAutoloader::register();
+            $container = new Container('OpenCart\OpenCart3');
+            static::$ocHelper = $container->getInstance('OcHelper', 'Helpers', [$this->registry, $container]);
         }
     }
 
@@ -56,7 +51,7 @@ class ControllerExtensionModuleAcumulus extends Controller
      */
     public function eventOrderUpdate(...$args): void
     {
-        $order_id = $this->ocHelper->extractOrderId($args);
-        $this->ocHelper->eventOrderUpdate($order_id);
+        $order_id = static::$ocHelper->extractOrderId($args);
+        static::$ocHelper->eventOrderUpdate($order_id);
     }
 }

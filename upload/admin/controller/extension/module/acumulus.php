@@ -19,8 +19,8 @@ use Siel\Acumulus\OpenCart\Helpers\OcHelper;
  */
 class ControllerExtensionModuleAcumulus extends Controller
 {
-    private static OcHelper $staticOcHelper;
-    private OcHelper $ocHelper;
+    private static OcHelper $ocHelper;
+    private static Container $acumulusContainer;
 
     /**
      * Constructor.
@@ -31,18 +31,16 @@ class ControllerExtensionModuleAcumulus extends Controller
     {
         /** @noinspection DuplicatedCode */
         parent::__construct($registry);
-        if (!isset($this->ocHelper)) {
-            if (!isset(static::$staticOcHelper)) {
-                // Load autoloader, container, and then our helper that contains
-                // OC3 and OC4 shared code.
-                require_once(DIR_SYSTEM . 'library/siel/acumulus/SielAcumulusAutoloader.php');
-                SielAcumulusAutoloader::register();
-                // Language will be set by the helper.
-                $container = new Container('OpenCart\OpenCart3');
-                /** @noinspection PhpFieldAssignmentTypeMismatchInspection */
-                static::$staticOcHelper = $container->getInstance('OcHelper', 'Helpers', [$this->registry, $container]);
-            }
-            $this->ocHelper = static::$staticOcHelper;
+        if (!isset(static::$ocHelper)) {
+            // Load autoloader, container, and then our helper that contains
+            // OC3 and OC4 shared code.
+            require_once(DIR_SYSTEM . 'library/siel/acumulus/SielAcumulusAutoloader.php');
+            SielAcumulusAutoloader::register();
+            // Language will be set by the helper.
+            static::$acumulusContainer = new Container('OpenCart\OpenCart3');
+            static::$ocHelper = static::$acumulusContainer->getInstance(
+                'OcHelper', 'Helpers', [$this->registry, static::$acumulusContainer]
+            );
         }
     }
 
@@ -64,7 +62,7 @@ class ControllerExtensionModuleAcumulus extends Controller
      */
     public function install(): void
     {
-        $this->ocHelper->install();
+        static::$ocHelper->install();
     }
 
     /**
@@ -74,7 +72,7 @@ class ControllerExtensionModuleAcumulus extends Controller
      */
     public function uninstall(): void
     {
-        $this->ocHelper->uninstall();
+        static::$ocHelper->uninstall();
     }
 
     /**
@@ -84,7 +82,17 @@ class ControllerExtensionModuleAcumulus extends Controller
      */
     public function index(): void
     {
-        $this->config();
+        static::$acumulusContainer->getShopCapabilities()->usesNewCode() ? $this->settings() : $this->config();
+    }
+
+    /**
+     * Controller action: show/process the basic settings form.
+     *
+     * @throws \Throwable
+     */
+    public function settings(): void
+    {
+        static::$ocHelper->settings();
     }
 
     /**
@@ -94,7 +102,17 @@ class ControllerExtensionModuleAcumulus extends Controller
      */
     public function config(): void
     {
-        $this->ocHelper->config();
+        static::$ocHelper->config();
+    }
+
+    /**
+     * Controller action: show/process the mappings form.
+     *
+     * @throws \Throwable
+     */
+    public function mappings(): void
+    {
+        static::$ocHelper->mappings();
     }
 
     /**
@@ -104,7 +122,7 @@ class ControllerExtensionModuleAcumulus extends Controller
      */
     public function advanced(): void
     {
-        $this->ocHelper->advancedConfig();
+        static::$ocHelper->advancedConfig();
     }
 
     /**
@@ -114,7 +132,7 @@ class ControllerExtensionModuleAcumulus extends Controller
      */
     public function batch(): void
     {
-        $this->ocHelper->batch();
+        static::$ocHelper->batch();
     }
 
     /**
@@ -124,7 +142,7 @@ class ControllerExtensionModuleAcumulus extends Controller
      */
     public function activate(): void
     {
-        $this->ocHelper->activate();
+        static::$ocHelper->activate();
     }
 
     /**
@@ -134,7 +152,7 @@ class ControllerExtensionModuleAcumulus extends Controller
      */
     public function register(): void
     {
-        $this->ocHelper->register();
+        static::$ocHelper->register();
     }
 
     /**
@@ -144,7 +162,7 @@ class ControllerExtensionModuleAcumulus extends Controller
      */
     public function invoice(): void
     {
-        $this->ocHelper->invoice();
+        static::$ocHelper->invoice();
     }
 
     /**
@@ -160,8 +178,8 @@ class ControllerExtensionModuleAcumulus extends Controller
      */
     public function eventOrderUpdate(...$args): void
     {
-        $order_id = $this->ocHelper->extractOrderId($args);
-        $this->ocHelper->eventOrderUpdate($order_id);
+        $order_id = static::$ocHelper->extractOrderId($args);
+        static::$ocHelper->eventOrderUpdate($order_id);
     }
 
     /**
@@ -174,10 +192,10 @@ class ControllerExtensionModuleAcumulus extends Controller
      *
      * @noinspection PhpUnused : event handler
      */
-    public function eventViewColumnLeft(/** @noinspection PhpUnusedParameterInspection */$route, &$data): void
+    public function eventViewColumnLeft(/** @noinspection PhpUnusedParameterInspection */ $route, &$data): void
     {
         if ($this->user->hasPermission('access', $this->getRoute())) {
-            $this->ocHelper->eventViewColumnLeft($data['menus']);
+            static::$ocHelper->eventViewColumnLeft($data['menus']);
         }
     }
 
@@ -195,7 +213,7 @@ class ControllerExtensionModuleAcumulus extends Controller
     public function eventControllerSaleOrderInfo(): void
     {
         if ($this->user->hasPermission('access', $this->getRoute())) {
-            $this->ocHelper->eventControllerSaleOrderInfo();
+            static::$ocHelper->eventControllerSaleOrderInfo();
         }
     }
 
@@ -211,14 +229,12 @@ class ControllerExtensionModuleAcumulus extends Controller
      * @throws \Throwable
      *
      * @noinspection PhpUnused : event handler
+     * @noinspection PhpUnusedParameterInspection
      */
-    public function eventViewSaleOrderInfo(
-        /** @noinspection PhpUnusedParameterInspection */$route,
-        &$data,
-        /** @noinspection PhpUnusedParameterInspection */&$code
-    ): void {
+    public function eventViewSaleOrderInfo($route, &$data, &$code): void
+    {
         if ($this->user->hasPermission('access', $this->getRoute())) {
-            $this->ocHelper->eventViewSaleOrderInfo((int) $data['order_id'], $data['tabs']);
+            static::$ocHelper->eventViewSaleOrderInfo((int) $data['order_id'], $data['tabs']);
         }
     }
 }
