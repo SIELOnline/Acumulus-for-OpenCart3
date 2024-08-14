@@ -82,7 +82,7 @@ class ControllerExtensionModuleAcumulus extends Controller
      */
     public function index(): void
     {
-        static::$acumulusContainer->getShopCapabilities()->usesNewCode() ? $this->settings() : $this->config();
+        $this->settings();
     }
 
     /**
@@ -96,16 +96,6 @@ class ControllerExtensionModuleAcumulus extends Controller
     }
 
     /**
-     * Controller action: show/process the basic settings form.
-     *
-     * @throws \Throwable
-     */
-    public function config(): void
-    {
-        static::$ocHelper->config();
-    }
-
-    /**
      * Controller action: show/process the mappings form.
      *
      * @throws \Throwable
@@ -113,16 +103,6 @@ class ControllerExtensionModuleAcumulus extends Controller
     public function mappings(): void
     {
         static::$ocHelper->mappings();
-    }
-
-    /**
-     * Controller action: show/process the advanced settings form.
-     *
-     * @throws \Throwable
-     */
-    public function advanced(): void
-    {
-        static::$ocHelper->advancedConfig();
     }
 
     /**
