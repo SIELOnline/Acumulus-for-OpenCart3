@@ -32,15 +32,52 @@ class ControllerExtensionModuleAcumulus extends Controller
         /** @noinspection DuplicatedCode */
         parent::__construct($registry);
         if (!isset(static::$ocHelper)) {
-            // Load autoloader, container, and then our helper that contains
+            // Load autoloader (OC3 only), container, and then our helper that contains
             // OC3 and OC4 shared code.
-            require_once(DIR_SYSTEM . 'library/siel/acumulus/SielAcumulusAutoloader.php');
-            SielAcumulusAutoloader::register();
+            static::registerAcumulusAutoloader();
             // Language will be set by the helper.
             static::$acumulusContainer = new Container('OpenCart\OpenCart3');
+            /** @noinspection PhpFieldAssignmentTypeMismatchInspection */
             static::$ocHelper = static::$acumulusContainer->getInstance(
-                'OcHelper', 'Helpers', [$this->registry, static::$acumulusContainer]
+                'OcHelper',
+                'Helpers',
+                [$this->registry, static::$acumulusContainer]
             );
+        }
+    }
+
+    /**
+     * Registers an autoloader for the Siel\Acumulus namespace.
+     *
+     * As not all web shops support autoloading based on namespaces or have
+     * other glitches, e.g. expecting lower cased file names, we define our own
+     * autoloader. If the module cannot use the autoloader of the web shop, this
+     * method should be called when bootstrapping the module.
+     *
+     * Thanks to https://gist.github.com/mageekguy/8300961
+     */
+    protected static function registerAcumulusAutoloader(): void
+    {
+        /** @noinspection DuplicatedCode */
+        // In some shops (OpenCart1) there's not one central entry point, and
+        // we may risk registering twice.
+        static $hasBeenRegistered = false;
+
+        if (!$hasBeenRegistered) {
+            $dir = DIR_SYSTEM . 'library/siel/acumulus/src/';
+            $ourNamespace = 'Siel\\Acumulus\\';
+            $ourNamespaceLen = strlen($ourNamespace);
+            $autoloadFunction = static function ($class) use ($ourNamespace, $ourNamespaceLen, $dir) {
+                if (strncmp($class, $ourNamespace, $ourNamespaceLen) === 0) {
+                    $fileName = $dir . str_replace('\\', DIRECTORY_SEPARATOR, substr($class, $ourNamespaceLen)) . '.php';
+                    if (is_readable($fileName)) {
+                        include($fileName);
+                    }
+                }
+            };
+            // Prepend this autoloader: it will not throw, nor warn, while the
+            // shop specific autoloader might do so.
+            $hasBeenRegistered = spl_autoload_register($autoloadFunction, true, true);
         }
     }
 
@@ -182,11 +219,11 @@ class ControllerExtensionModuleAcumulus extends Controller
     /**
      * Adds our menu-items to the admin menu.
      *
-     * param string $route
+     * Param string $route
      *   The current route (common/column_left).
-     * param array $data
+     * Param array $data
      *   The data as will be passed to the view.
-     * param string $code
+     * Param string $code
      *
      * @noinspection PhpUnused : event handler
      */

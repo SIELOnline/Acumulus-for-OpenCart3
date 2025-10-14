@@ -11,4 +11,4 @@ interdiff.txt
 *.ocmod.zip
 
 # Library
-upload/system/library/
+upload/system/library/*
